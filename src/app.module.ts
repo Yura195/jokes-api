@@ -5,19 +5,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from './config/config';
 import { typeOrmConfig } from './config/typeorm.config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot(config),
     TypeOrmModule.forRootAsync(typeOrmConfig),
-    GraphQLModule.forRoot({
-      installSubscriptionHandlers: true,
-      autoSchemaFile: 'schema.gql',
-      playground: true,
-      introspection: true,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      driver: ApolloDriver,
+      debug: true,
     }),
-    JokesModule
-],
+    JokesModule,
+  ],
   controllers: [],
   providers: [],
 })

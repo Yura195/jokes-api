@@ -1,1 +1,13 @@
+type Joke {
+  categories: [String!]!
+  created_at: String!
+  icon_url: String!
+  id: String!
+  updated_at: String!
+  url: String!
+  value: String!
+}
 
+type Query {
+  getRandomJoke(limit: Int!): Joke!
+}
