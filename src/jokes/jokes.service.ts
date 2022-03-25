@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ChuckResponse } from './interfaces/chuck-response.interface';
 import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, map, Observable } from 'rxjs';
 import { API_ROOT } from './jokes.constants';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,7 +16,7 @@ export class JokesService {
     private readonly _httpService: HttpService,
   ) {}
 
-  async getRandomJoke(limit: number):Promise<Promise<ChuckResponse>[]>{
+  async getRandomJoke(limit: number): Promise<Promise<ChuckResponse>[]> {
     const API_RANDOM = API_ROOT + 'random';
     try {
       if (limit) {
@@ -27,8 +27,7 @@ export class JokesService {
           );
         }
         const data = arrayRequests.map(async (el) => {
-          
-          return el.data
+          return el.data;
         });
         return data;
       }
@@ -37,7 +36,10 @@ export class JokesService {
     }
   }
 
-  async getRandomJokeByCategory(limit: number, category: string):Promise<Promise<ChuckResponse>[]> {
+  async getRandomJokeByCategory(
+    limit: number,
+    category: string,
+  ): Promise<Promise<ChuckResponse>[]> {
     const API_RANDOM_CATEGORY = API_ROOT + `random?category=${category}`;
     try {
       if (limit) {
@@ -55,7 +57,10 @@ export class JokesService {
     }
   }
 
-  async getJokeByTextSearch(text: string, limit: number):Promise<Promise<ChuckResponse>[]> {
+  async getJokeByTextSearch(
+    text: string,
+    limit: number,
+  ): Promise<Promise<ChuckResponse>[]> {
     const API_RANDOM_TEXT_SEARCH = API_ROOT + `search?query=${text}`;
     try {
       const { data } = await lastValueFrom(
@@ -68,5 +73,21 @@ export class JokesService {
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  async addJokeToFavorite(id: string) {
+    const API_FAVORITE = API_ROOT + id;
+    try {
+      const { data } = await lastValueFrom(this._httpService.get(API_FAVORITE));
+      const joke = new JokeEntity();
+      joke.value = data.value;
+      return await this._jokeRepository.save(joke);
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  async showFavoriteJoke() {
+    return await this._jokeRepository.find()
   }
 }

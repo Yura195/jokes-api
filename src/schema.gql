@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type JokeEntity {
+  id: String!
+  value: String!
+}
+
 type Joke {
   categories: [String!]!
   created_at: String!
@@ -21,4 +26,6 @@ type Query {
   getRandomJoke(limit: Int!): [Joke!]!
   getRandomJokeByCategory(limit: Int!, category: String!): [Joke!]!
   getJokeByTextSearch(text: String!, limit: Int!): JokeTextSearch!
+  addJokeToFavorite(id: String!): JokeEntity!
+  showFavoriteJoke: [JokeEntity!]!
 }
